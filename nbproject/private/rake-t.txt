@@ -1,0 +1,12 @@
+(in /Users/runningwolf/Desktop/HealthVault)
+rake clean            # Remove any temporary products.
+rake clobber          # Remove any generated file.
+rake clobber_package  # Remove package products
+rake clobber_rdoc     # Remove rdoc products
+rake gem              # Build the gem file rubyhealthvault-0.0.1.gem
+rake package          # Build all the packages
+rake rdoc             # Build the rdoc HTML Files
+rake repackage        # Force a rebuild of the package files
+rake rerdoc           # Force a rebuild of the RDOC files
+rake test             # Run tests
+rake testspec         # Run specs
