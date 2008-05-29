@@ -1,4 +1,5 @@
-require 'healthvault'
+#!/usr/bin/ruby
+require File.dirname(__FILE__) + '/../lib/healthvault'
 require File.dirname(__FILE__) + "/../spec/support/test_server"
 include HealthVault
 
@@ -27,8 +28,10 @@ result = request.send
 
 record_id = result.info.person_info.selected_record_id
 
+puts 'got person info for...'
 puts result.info.person_info.name
-puts 'got person info...'
+puts 'with record id...'
+puts record_id
 
 #request = Request.create("GetThings", connection)
 #request.header.record_id = record_id

@@ -12,16 +12,21 @@ require File.dirname(__FILE__) + '/utils/crypto_utils'
 
 module HealthVault
   class Application
-    attr_reader :id, :key, :uri
+    attr_reader :id, :uri
     
     def initialize(id, hv_uri, certificate_location)
       @id = id
       @uri = URI.parse(hv_uri)
-      @key = CryptoKey.new(certificate_location)
+      @key_file = certificate_location
+    end
+    
+    def key
+      return CryptoKey.new(@key_file)
     end
     
     def self.default
-      return Application.new(APPLICATIONID, HEALTHVAULT_URL, File.dirname(__FILE__) + "/#{CERTFILE}")
+      config = Configuration.instance
+      return Application.new(config.app_id, config.hv_url, config.cert_file)
     end
     
     def create_connection

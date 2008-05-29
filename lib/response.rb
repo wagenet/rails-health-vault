@@ -22,10 +22,10 @@ module HealthVault
       code = XPath.first(@xml, "//code").text
       if code.to_i > 0
         msg = XPath.first(@xml, "//error/message").text
-        LOGGER.error "ERRORCODE: #{code.to_s} MESSAGE: #{msg}"
+        Configuration.instance.logger.error "ERRORCODE: #{code.to_s} MESSAGE: #{msg}"
         raise StandardError.new(msg)
       end
-      LOGGER.debug @xml.to_s
+      Configuration.instance.logger.debug @xml.to_s
       info_node = XPath.first(@xml, '//wc:info')
       response_namespace = info_node.attribute('xmlns:wc').to_s
       m = response_namespace.match(/urn\:com\.microsoft\.wc\.(.*)/)
@@ -40,7 +40,7 @@ module HealthVault
           @info.parse_element(info_node)
         rescue => e
           puts e
-          LOGGER.error e
+          Configuration.instance.logger.error e
           @info = nil
         end
       end

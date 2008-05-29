@@ -53,7 +53,7 @@ module HealthVault
       http_endpoint.use_ssl = true
       #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER
       content = request.to_s
-      LOGGER.debug content
+      Configuration.instance.logger.debug content
       http_header = {'Content-Type' => 'text/xml'}
       return Response.new(http_endpoint.post(application.uri.path, content, http_header))    
     end

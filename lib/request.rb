@@ -75,7 +75,7 @@ module HealthVault
         class_new = "HealthVault::WCData::Methods::#{header.method}::Info.new"
         return eval(class_new)
       rescue
-        LOGGER.error "No Info class for #{header.method}"
+        Configuration.instance.logger.error "No Info class for #{header.method}"
         return HealthVault::WCData::RawInfoXml.new
       end
     end

@@ -103,10 +103,10 @@ module HealthVault
                 end
               end
             rescue => err
-              LOGGER.error err
+              Configuration.instance.logger.error err
             end
             # unknown node type
-            LOGGER.debug "unknown node of #{node} for #{self.class.to_s}"
+            Configuration.instance.logger.debug "unknown node of #{node} for #{self.class.to_s}"
           else
             #add_new_to_children(@children[node][:value],child, @children[node][:class])
             x = @children[node][:class].new
@@ -135,7 +135,7 @@ module HealthVault
           name = attr.name
           if @children[name].nil?
             # unknown attribute type
-            LOGGER.debug "unknown attribute of #{name} for #{self.class.to_s}"
+            Configuration.instance.logger.debug "unknown attribute of #{name} for #{self.class.to_s}"
           else
             @children[name][:value] = attr.value.to_s
           end
@@ -182,7 +182,7 @@ module HealthVault
                   valid = valid && !(v.nil? || v.to_s.empty?)
                 end
               rescue => e
-                LOGGER.error e
+                Configuration.instance.logger.error e
                 valid = false
                 break
               end
@@ -198,7 +198,7 @@ module HealthVault
                 valid = valid && !(child[:value].nil? || child[:value].to_s.empty?)
               end
             rescue => e
-              LOGGER.error e
+              Configuration.instance.logger.error e
               valid = false
               break
             end

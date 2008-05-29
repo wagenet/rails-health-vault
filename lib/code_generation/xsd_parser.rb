@@ -16,6 +16,7 @@ module HealthVault
     class XSDParser
       include StringUtils
       include REXML
+      
       def initialize(filename)
         cdir = File.dirname(__FILE__)
         @filename = filename
@@ -23,6 +24,7 @@ module HealthVault
         @complex_template = cdir + "/../templates/complex_type_template.erb"
         @thing_ex_template = cdir + "/../templates/thing_class_extension_template.erb"
         @file_path = cdir + "/../wc_data/generated"
+        @logger = Configuration.instance.logger
       end
       
       def add_thing(filename)
@@ -46,7 +48,7 @@ module HealthVault
           @thing_hash ||= Hash.new
           @thing_hash[guid] = class_path
         rescue
-          LOGGER.error "Not a HealthVault targetNamespace, can't parse #{@filename}"
+          @logger.error "Not a HealthVault targetNamespace, can't parse #{@filename}"
           return
         end
       end
@@ -71,7 +73,7 @@ module HealthVault
         begin
           @modules = (@namespace.match(/urn\:com\.microsoft\.wc\.(.*)/)[1]).split('.')
         rescue
-          LOGGER.error "Not a HealthVault targetNamespace, can't parse #{@filename}"
+          @logger.error "Not a HealthVault targetNamespace, can't parse #{@filename}"
           return
         end
         create_directories
