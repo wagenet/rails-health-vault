@@ -14,6 +14,7 @@ module HealthVault
         
   <% children.each do |child| %>   
        <% if child[:max] == '1' %>
+        <% if child[:min].to_i > 0 %>#<b>REQUIRED</b><% end %>
         <%= child[:doc] %><%= "#<em>value</em> is a #{child[:class]}" %>
         def <%= underscore(child[:name]) %>=(value)
           @children['<%= child[:name] %>'][:value] = value
@@ -34,6 +35,7 @@ module HealthVault
             @children['<%= child[:name] %>'][:value].delete(value)
         end
         
+        <% if child[:min].to_i > 0 %>#<b>REQUIRED</b><% end %>
         <%= child[:doc] %><%= "#<b>returns</b>: a #{child[:class]} Array" %>
         def <%= underscore(child[:name]) %>
           return @children['<%= child[:name] %>'][:value]
@@ -43,6 +45,7 @@ module HealthVault
       
         def initialize
           super
+          self.tag_name = '<%= tag_name %>'
         <% children.each do |child| %>
           <% if child[:max] == '1' %>
           @children['<%= child[:name] %>'] = {:name => '<%= child[:name] %>', :class => <%= child[:class] %>, :value => nil, :min => <%= child[:min] %>, :max => <%= child[:max] %>, :order => <%= child[:order] %>, :place => :<%= child[:type]  %>, :choice => <%= child[:choice].to_i %> }

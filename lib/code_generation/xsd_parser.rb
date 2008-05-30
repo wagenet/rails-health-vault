@@ -147,7 +147,7 @@ module HealthVault
         e.get_elements('restriction').each do |r|
           restrictions = restrictions.merge(parse_restriction(r))
         end
-        create_class_from_template(@simple_template, file_name, class_name, restrictions)
+        create_class_from_template(@simple_template, file_name, class_name, cname.downcase, "", restrictions)
       end
       
       # creates a ruby class file that extends ComplexType
@@ -170,7 +170,7 @@ module HealthVault
             children += parse_choice(child)
           end
         end
-        create_class_from_template(@complex_template, file_name, class_name, children)
+        create_class_from_template(@complex_template, file_name, class_name, cname.downcase, cdoc, children)
       end
       
       #returns an Array of child node Hashes
@@ -343,7 +343,7 @@ module HealthVault
       end
       
       # generate the .rb file with the given template
-      def create_class_from_template(template, file_name, class_name, children = [])
+      def create_class_from_template(template, file_name, class_name, tag_name, cdoc, children = [])
         result = ''
         modules = @modules
         if @test == :yes

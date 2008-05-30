@@ -11,6 +11,7 @@ module HealthVault
   module WCData
     class ComplexType
       include REXML
+      attr_accessor :tag_name
       
       def initialize
         @children = Hash.new
@@ -40,8 +41,8 @@ module HealthVault
 
       # construct REXML::Element tree from children
       def element(container = nil)
-        cname = self.class.to_s
-        my_name = cname.split('::')[-1].downcase
+        #cname = self.class.to_s
+        my_name = tag_name.to_s.strip.downcase#cname.split('::')[-1].downcase#
         if container.nil?
           me = Element.new(my_name)
         elsif container.is_a?(String)
