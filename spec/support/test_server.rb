@@ -1,3 +1,6 @@
+if RUBY_PLATFORM =~ /(:?mswin|mingw)/ #TODO: what about jruby?
+  require 'win32ole'
+end
 require 'cgi'
 require 'webrick'
 require 'thread'
@@ -27,7 +30,13 @@ class TestServer
   end
   
   def open_login
-    system("open","https://account.healthvault-ppe.com/redirect.aspx?target=AUTH&targetqs=?appid=05a059c9-c309-46af-9b86-b06d42510550%26redirect=http://localhost:7331/testAuth")
+    if RUBY_PLATFORM =~ /(:?mswin|mingw)/
+      ie = WIN32OLE.new('InternetExplorer.Application')
+      ie.visible = true
+      ie.navigate("https://account.healthvault-ppe.com/redirect.aspx?target=AUTH&targetqs=?appid=05a059c9-c309-46af-9b86-b06d42510550%26redirect=http://localhost:7331/testAuth")
+    else
+      system("open","https://account.healthvault-ppe.com/redirect.aspx?target=AUTH&targetqs=?appid=05a059c9-c309-46af-9b86-b06d42510550%26redirect=http://localhost:7331/testAuth")
+    end
   end
   
 end
