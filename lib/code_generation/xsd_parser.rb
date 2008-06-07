@@ -34,7 +34,7 @@ module HealthVault
         mods = Array.new
         begin
           mods = (tgt_namespace.match(/urn\:com\.microsoft\.wc\.(.*)/)[1]).split('.')
-          guid = @xml.root.get_elements('annotation/documentation/type-id')[0].text.to_s
+          guid = XPath.first(@xml.root, "//type-id").to_s#@xml.root.get_elements('annotation/documentation/type-id')[0].text.to_s
           el = @xml.root.get_elements('element')[0]
           cname = el.attribute('name').to_s
           type = el.attribute('type').to_s
@@ -87,20 +87,21 @@ module HealthVault
             create_complex_type(e)
           when 'element'
             #root elements
-            type = e.attribute('type').to_s
-            #if the element has a type we can skip it
-            #since we are only looking for new types
-            next unless type.empty?
-            #this element defines an anonymous type
-            cname = e.attribute('name').to_s
-            e.elements.each do |child|
-              case child.name
-              when 'simpleType'
-                create_simple_type(child, cname)
-              when 'complexType'
-                create_complex_type(child, cname)
-              end
-            end
+            parse_element(e)
+            #            type = e.attribute('type').to_s
+            #            #if the element has a type we can skip it
+            #            #since we are only looking for new types
+            #            next unless type.empty?
+            #            #this element defines an anonymous type
+            #            cname = e.attribute('name').to_s
+            #            e.elements.each do |child|
+            #              case child.name
+            #              when 'simpleType'
+            #                create_simple_type(child, cname)
+            #              when 'complexType'
+            #                create_complex_type(child, cname)
+            #              end
+            #            end
           end
         end
       end
@@ -275,10 +276,22 @@ module HealthVault
       
       #returns a Hash of element properties for the template
       def parse_element(e, choice = nil, min = '', max = '')
+        type = e.attribute('type').to_s
         cname = e.attribute('name').to_s
         #TODO decide what to do with ref elements
-        return if cname.empty?
-        class_path = get_class_path(e.attribute('type').to_s)
+        return nil if cname.empty?
+        if type.empty?
+          #this element defines an anonymous type
+          e.elements.each do |child|
+            case child.name
+            when 'simpleType'
+              create_simple_type(child, cname)
+            when 'complexType'
+              create_complex_type(child, cname)
+            end
+          end
+        end
+        class_path = get_class_path(type)
         max = e.attribute('maxOccurs').to_s if max.empty?
         min = e.attribute('minOccurs').to_s if min.empty?
         max = '1' if max.empty?

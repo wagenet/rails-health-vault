@@ -33,16 +33,36 @@ module HealthVault
   end
   
   class CryptoKey
-    def initialize(pfx_filename)
-      @pfx = OpenSSL::PKCS12::PKCS12.new(File.read(pfx_filename))
+    def initialize(pfx_or_pem_filename)
+      begin
+        #INFO: I can't get OpenSSL::PKCS12 working on windows.
+        # This call fails with 'mac verify failed'
+        # To work around this I created a pem on the command line like:
+        # openssl pkcs12 -in xxx.pfx -out xxx.pem -nodes
+        @pfx = OpenSSL::PKCS12::PKCS12.new(File.read(pfx_or_pem_filename))
+      rescue
+        @pfx = nil
+        @pkey = OpenSSL::PKey::RSA.new(File.read(pfx_or_pem_filename))
+        @cert = OpenSSL::X509::Certificate.new(File.read(pfx_or_pem_filename))
+      end
     end
     
     def sign(text)
-      return @pfx.key.sign(OpenSSL::Digest::SHA1.new, text)
+      if @pfx.nil?
+        return @pkey.sign(OpenSSL::Digest::SHA1.new, text)
+      else
+        return @pfx.key.sign(OpenSSL::Digest::SHA1.new, text)
+      end
+      
     end
     
     def fingerprint
-      return OpenSSL::Digest::SHA1.hexdigest(@pfx.certificate.to_der)
+      if @pfx.nil?
+        return OpenSSL::Digest::SHA1.hexdigest(@cert.to_der)
+      else
+        return OpenSSL::Digest::SHA1.hexdigest(@pfx.certificate.to_der)
+      end
+      
     end
   end
 end

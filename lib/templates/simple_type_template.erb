@@ -14,7 +14,7 @@ module HealthVault
       <% children.each do |name, target| %>
         <% if name == 'enumeration' %>
             <% target.each do |enum| %>
-        def self.<%= enum.empty? ? 'empty' : enum.to_s.downcase.strip.gsub(' ', '_') %>
+        def self.<%= enum.empty? ? 'empty' : underscore(enum.to_s.downcase.strip.gsub(' ', '_')) %>
           return '<%= enum.to_s %>'
         end
             <% end %>

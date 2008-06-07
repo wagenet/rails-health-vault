@@ -18,7 +18,7 @@ module HealthVault
     #using HealthVault::Configuration.instance accessor methods
     def initialize
       @app_id = "05a059c9-c309-46af-9b86-b06d42510550"
-      @cert_file = File.dirname(__FILE__) + "/certs/HelloWorld-SDK_ID-05a059c9-c309-46af-9b86-b06d42510550.pfx"
+      @cert_file = File.dirname(__FILE__) + "/certs/helloWorld.pem"
       @shell_url = "https://account.healthvault-ppe.com"
       @hv_url = "https://platform.healthvault-ppe.com/platform/wildcat.ashx"
       @logger = Logger.new("hv.log")
