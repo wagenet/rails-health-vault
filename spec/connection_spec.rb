@@ -1,22 +1,17 @@
-require File.dirname(__FILE__) + "/support/test_server"
-require File.dirname(__FILE__) + "/../lib/connection"
+require File.dirname(__FILE__) + "/../lib/healthvault"
 include HealthVault
 
 describe Connection do
   before(:each) do
-    @connection = Connection.new
+    app = Application.default
+    @connection = app.create_connection
   end
 
-  it "application should be authenticated" do
+  it "should authenticate the application" do
+    @connection.authenticated?.should == false
+    @connection.authenticate
     @connection.authenticated?.should == true
   end
   
-  it "should authenticate a user" do
-    @test_server = TestServer.new
-    @test_server.open_login
-    @test_server.wait_for_auth
-    @connection.credential.user_auth_token = @test_server.auth_token
-    @connection.authenticated?(:user).should == true
-  end
 end
 
