@@ -33,16 +33,17 @@ module HealthVault
   end
   
   class CryptoKey
-    def initialize(pfx_or_pem_filename)
+    def initialize(pfx_or_pem_filename, password = nil)
       begin
         #INFO: I can't get OpenSSL::PKCS12 working on windows.
         # This call fails with 'mac verify failed'
         # To work around this I created a pem on the command line like:
         # openssl pkcs12 -in xxx.pfx -out xxx.pem -nodes
-        @pfx = OpenSSL::PKCS12::PKCS12.new(File.read(pfx_or_pem_filename))
+        @pfx = OpenSSL::PKCS12::PKCS12.new(File.read(pfx_or_pem_filename), password)
+        #TODO if pfx files are going to be a problem, maybe we just ought to remove
       rescue
         @pfx = nil
-        @pkey = OpenSSL::PKey::RSA.new(File.read(pfx_or_pem_filename))
+        @pkey = OpenSSL::PKey::RSA.new(File.read(pfx_or_pem_filename),password)
         @cert = OpenSSL::X509::Certificate.new(File.read(pfx_or_pem_filename))
       end
     end
