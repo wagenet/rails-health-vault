@@ -34,7 +34,7 @@ module HealthVault
         mods = Array.new
         begin
           mods = (tgt_namespace.match(/urn\:com\.microsoft\.wc\.(.*)/)[1]).split('.')
-          guid = XPath.first(@xml.root, "//type-id").to_s#@xml.root.get_elements('annotation/documentation/type-id')[0].text.to_s
+          guid = XPath.first(@xml.root, "//type-id").text.to_s#@xml.root.get_elements('annotation/documentation/type-id')[0].text.to_s
           el = @xml.root.get_elements('element')[0]
           cname = el.attribute('name').to_s
           type = el.attribute('type').to_s

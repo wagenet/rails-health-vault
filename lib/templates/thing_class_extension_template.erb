@@ -12,8 +12,7 @@ module HealthVault
       class Thing        
         @@class_hash = Hash.new  
         <% class_hash.each do |key, val| %>
-        @@class_hash['<%= key %>'] = <%= val %>
-        <% end %>
+        @@class_hash['<%= key %>'] = <%= val %><% end %>
         def self.guid_to_class(guid)
           return @@class_hash[guid]
         end        
