@@ -1,9 +1,7 @@
-if RUBY_PLATFORM =~ /(:?mswin|mingw)/ #TODO: what about jruby?
-  require 'win32ole'
-end
 require 'cgi'
 require 'webrick'
 require 'thread'
+require File.dirname(__FILE__) + '/../../lib/config'
 
 class TestServer  
   include WEBrick
@@ -29,14 +27,18 @@ class TestServer
     @http_server.shutdown
   end
   
-  def open_login
-    if RUBY_PLATFORM =~ /(:?mswin|mingw)/
-      ie = WIN32OLE.new('InternetExplorer.Application')
-      ie.visible = true
-      ie.navigate("https://account.healthvault-ppe.com/redirect.aspx?target=AUTH&targetqs=?appid=05a059c9-c309-46af-9b86-b06d42510550%26redirect=http://localhost:7331/testAuth")
+  def open_login # TODO: Figure out how to do this in JRuby
+    config = Configuration.instance
+    auth_url = "#{config.shell_url}/redirect.aspx?target=AUTH&targetqs=?appid=#{config.app_id}%26redirect=http://localhost:7331/testAuth"
+
+    if RUBY_PLATFORM =~ /(:?mswin|mingw)/ # Windows
+      system("start #{auth_url}")
+    elsif RUBY_PLATFORM =~ /darwin/ # Mac (Darwin, really)
+      system("open", auth_url)
     else
-      system("open","https://account.healthvault-ppe.com/redirect.aspx?target=AUTH&targetqs=?appid=05a059c9-c309-46af-9b86-b06d42510550%26redirect=http://localhost:7331/testAuth")
+      # TODO: Launch the default browser on other platforms.
+      system("firefox", auth_url)
     end
   end
-  
+
 end
