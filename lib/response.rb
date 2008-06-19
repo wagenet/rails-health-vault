@@ -17,8 +17,8 @@ module HealthVault
     attr_reader :xml, :info
     
     def initialize(http_response)
-      @http_response = http_response
-      @xml = Document.new(@http_response.body)
+      #@http_response = http_response
+      @xml = Document.new(http_response.body)
       code = XPath.first(@xml, "//code").text
       if code.to_i > 0
         msg = XPath.first(@xml, "//error/message").text
@@ -26,9 +26,15 @@ module HealthVault
         raise StandardError.new(msg)
       end
       Configuration.instance.logger.debug @xml.to_s
-      info_node = XPath.first(@xml, '//wc:info')
-      response_namespace = info_node.attribute('xmlns:wc').to_s
-      m = response_namespace.match(/urn\:com\.microsoft\.wc\.(.*)/)
+      begin
+        info_node = XPath.first(@xml, '//wc:info')
+        response_namespace = info_node.attribute('xmlns:wc').to_s
+        m = response_namespace.match(/urn\:com\.microsoft\.wc\.(.*)/)
+      rescue => e
+        Configuration.instance.logger.warn @xml
+        Configuration.instance.logger.warn e
+        m = nil
+      end
       if m.nil?
         @info = nil
       else
@@ -39,7 +45,6 @@ module HealthVault
           @info = nfo
           @info.parse_element(info_node)
         rescue => e
-          puts e
           Configuration.instance.logger.error e
           @info = nil
         end
