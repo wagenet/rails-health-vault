@@ -7,6 +7,7 @@
 
 require 'logger'
 require 'singleton'
+require 'rexml/formatters/pretty'
 
 module HealthVault
   class Configuration
@@ -25,5 +26,11 @@ module HealthVault
       @logger = Logger.new("#{HEALTHVAULT_ROOT}/hv.log")
     end
     
+    def log_xml(doc, level = :debug)
+      f = REXML::Formatters::Pretty.new
+      result = ''
+      f.write(doc, result)
+      logger.send(level, result)
+    end
   end
 end
