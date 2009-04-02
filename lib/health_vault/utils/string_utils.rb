@@ -6,30 +6,16 @@
 #++
 
 module HealthVault
-  module StringUtils
-    def camelize(string)
-      result = ""
-      parts = string.split('_')
-      result << parts.first.downcase
-      parts[1..-1].each {|s| result << s.downcase.capitalize}
-      return result
-    end
-      
-    def underscore(camel_cased_word)
-      return camel_cased_word.to_s.gsub(/::/, '/').
-        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-        gsub(/([a-z\d])([A-Z])/,'\1_\2').
-        tr("-", "_").
-        downcase
-    end
-    
-    def classify(string)
-      if string.length > 1
-        class_name =  string[/./].upcase + string[1..-1]
-      else
-        class_name = string
+  module Utils
+    module StringUtils    
+      def hv_classify(string)
+        string.tr('-','_').camelize
       end
-      return class_name.gsub('-', '')
+      
+      def to_filename(word)
+        # Remove underscores before digits or our files will have the wrong names
+        word.underscore.gsub(/_+(\d)/, '\1')
+      end
     end
   end
 end
