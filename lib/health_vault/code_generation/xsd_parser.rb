@@ -7,23 +7,20 @@
 
 require 'rexml/document'
 require 'erb'
-require File.dirname(__FILE__) + "/../wc_data/complex_type"
-require File.dirname(__FILE__) + "/../config"
-require File.dirname(__FILE__) + "/../utils/string_utils"
 
 module HealthVault
   module CodeGeneration
     class XSDParser
-      include StringUtils
+      include Utils::StringUtils
       include REXML
-      
+            
       def initialize(filename)
-        cdir = File.dirname(__FILE__)
+        cdir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'templates'))
         @filename = filename
-        @simple_template = cdir + "/../templates/simple_type_template.erb"
-        @complex_template = cdir + "/../templates/complex_type_template.erb"
-        @thing_ex_template = cdir + "/../templates/thing_class_extension_template.erb"
-        @file_path = cdir + "/../wc_data/generated"
+        @simple_template = cdir + "/simple_type_template.erb"
+        @complex_template = cdir + "/complex_type_template.erb"
+        @thing_ex_template = cdir + "/thing_class_extension_template.erb"
+        @file_path = "#{HEALTHVAULT_ROOT}/lib/generated/health_vault/wc_data"
         @logger = Configuration.instance.logger
       end
       
@@ -40,7 +37,7 @@ module HealthVault
           type = el.attribute('type').to_s
           class_path = "HealthVault::WCData::"
           if type.empty?
-            class_path += (mods.collect {|s| classify(s)}).join('::') + "::" + classify(cname)
+            class_path += (mods.collect {|s| hv_classify(s)}).join('::') + "::" + hv_classify(cname)
           else
             namespaces = get_namespaces
             class_path = get_class_path(type)
@@ -57,12 +54,12 @@ module HealthVault
         class_hash = @thing_hash
         result = ""
         File.open(File.dirname(__FILE__) + "/../wc_data/thing.rb", 'w') do |f|
-          e = ERB.new(File.read(@thing_ex_template), 0, '<>', 'result')
+          e = erb_with_defaults(File.read(@thing_ex_template))
           e.result(binding)
           f << result
         end
       end
-      
+            
       # creates ruby class files for the types defined in the xsd
       def run(test = :no)
         @test = test
@@ -117,7 +114,7 @@ module HealthVault
           if name.include?('xmlns:')
             m = value.match(/urn\:com\.microsoft\.wc\.(.*)/)
             unless m.nil?
-              mod = (m[1].split('.').collect {|s| classify(s)}).join('::')
+              mod = (m[1].split('.').collect {|s| hv_classify(s)}).join('::')
               namespaces[name.split(':')[-1]]= mod
             end
           end
@@ -128,10 +125,10 @@ module HealthVault
       # create the directory structure from the xsd namespace
       def create_directories
         unless File.exists?(@file_path)
-          Dir.mkdir(@file_path)
-        end        
+          FileUtils.mkdir_p(@file_path)
+        end      
         @modules.each do |m| 
-          @file_path << "/#{underscore(m)}"
+          @file_path << "/#{m.underscore}"
           unless File.exists?(@file_path)
             Dir.mkdir(@file_path)
           end
@@ -142,8 +139,8 @@ module HealthVault
       def create_simple_type(e, cname = '')
         cname = e.attribute('name').to_s if cname.empty?
         cname = 'info' if cname.empty?
-        file_name = underscore(cname)
-        class_name = classify(cname)
+        file_name = to_filename(cname)
+        class_name = hv_classify(cname)
         restrictions = Hash.new
         e.get_elements('restriction').each do |r|
           restrictions = restrictions.merge(parse_restriction(r))
@@ -155,9 +152,10 @@ module HealthVault
       def create_complex_type(e, cname = '')
         cname = e.attribute('name').to_s if cname.empty?
         children = Array.new
-        file_name = underscore(cname)
-        class_name = classify(cname)
+        file_name = to_filename(cname)
+        class_name = hv_classify(cname)
         cdoc = doc(e)
+        
         e.elements.each do |child|
           case child.name
           when 'sequence'
@@ -171,6 +169,7 @@ module HealthVault
             children += parse_choice(child)
           end
         end
+                
         create_class_from_template(@complex_template, file_name, class_name, cname.downcase, cdoc, children)
       end
       
@@ -266,6 +265,8 @@ module HealthVault
         choice_id = rand(1 << 29).to_s
         e.elements.each do |child|
           case child.name
+          when 'sequence'
+            children += parse_sequence(child)
           when 'element'
             n = parse_element(child, choice_id, min, max)
             children << n unless n.nil?
@@ -348,27 +349,34 @@ module HealthVault
         comp = type.split(':')
         @namespaces.each do |k,v|
           if comp[0] == k
-            return base + v + "::#{classify(type.gsub(/.*:/, ''))}"
+            return base + v + "::#{hv_classify(type.gsub(/.*:/, ''))}"
           end
         end
         #TODO: parse xsd primatives
-        return "String"#base + classify(type.gsub(/wc-.*:/, ''))
+        return "String"#base + hv_classify(type.gsub(/wc-.*:/, ''))
       end
       
       # generate the .rb file with the given template
       def create_class_from_template(template, file_name, class_name, tag_name, cdoc, children = [])
         result = ''
         modules = @modules
+        
         if @test == :yes
-          e = ERB.new(File.read(template), 0, '<>', 'result')
+          e = erb_with_defaults(File.read(template))
           e.run(binding)
         else
-          File.open(@file_path + "/#{file_name}.rb", 'w') do |f|
-            e = ERB.new(File.read(template), 0, '<>', 'result')
+          # Remove underscores before digits or our files will have the wrong names
+          file = File.join(File.expand_path(@file_path), "#{file_name}.rb")
+          File.open(file, 'w') do |f|
+            e = erb_with_defaults(File.read(template))
             e.result(binding)
             f << result
           end
         end
+      end
+      
+      def erb_with_defaults(data)
+        ERB.new(data, 0, '-', 'result')
       end
       
     end

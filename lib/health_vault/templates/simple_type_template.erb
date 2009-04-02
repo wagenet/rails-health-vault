@@ -8,13 +8,15 @@
 
 module HealthVault
   module WCData
-  <% modules.each do |m| %>module <%= classify(m) + "\n" %><% end %>
+  <%- modules.each do |m| -%>
+    module <%= hv_classify(m) %>
+  <%- end -%>
       <%= "##{class_name} is a #{children['base'].to_s}" %>
       class <%= class_name %> < SimpleType
       <% children.each do |name, target| %>
         <% if name == 'enumeration' %>
             <% target.each do |enum| %>
-        def self.<%= enum.empty? ? 'empty' : underscore(enum.to_s.downcase.strip.gsub(' ', '_')) %>
+        def self.<%= enum.empty? ? 'empty' : enum.to_s.downcase.strip.gsub(' ', '_').underscore %>
           return '<%= enum.to_s %>'
         end
             <% end %>

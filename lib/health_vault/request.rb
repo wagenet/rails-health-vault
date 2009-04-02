@@ -8,7 +8,6 @@
 require 'rexml/document'
 require 'date'
 require File.dirname(__FILE__) + '/utils/string_utils'
-require File.dirname(__FILE__) + '/wc_data/init'
 
 # HealtVault doesn't adhere to valid xml standards.
 # Attribute values must be in double quotes to be parseable
@@ -19,7 +18,7 @@ module HealthVault
   class Request < HealthVault::WCData::ComplexType
     include WCData
     include REXML
-    include StringUtils
+    include Utils::StringUtils
     
     # HealthVault::WCData::Types::HMACFinalized
     def auth=(value)

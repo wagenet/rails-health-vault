@@ -1,0 +1,12 @@
+*.log
+.DS_Store
+
+lib/generated/*
+lib/health_vault/wc_data/thing.rb
+
+lib/health_vault/wc_data/thing.rb
+lib/health_vault/xsd/common/
+lib/health_vault/xsd/requests/
+lib/health_vault/xsd/responses/
+lib/health_vault/xsd/things/
+

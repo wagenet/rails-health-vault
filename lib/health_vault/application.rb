@@ -6,9 +6,7 @@
 #++
 
 require 'uri'
-require File.dirname(__FILE__) + '/config'
-require File.dirname(__FILE__) + '/connection'
-require File.dirname(__FILE__) + '/utils/crypto_utils'
+require 'utils/crypto_utils' # for CryptoKey
 
 module HealthVault
   class Application
@@ -22,7 +20,7 @@ module HealthVault
     end
     
     def key
-      return CryptoKey.new(@cert_file, @cert_pass)
+      return Utils::CryptoKey.new(@cert_file, @cert_pass)
     end
     
     def self.default

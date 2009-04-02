@@ -1,6 +1,6 @@
 # -*- ruby -*-
 #--
-# Copyright 2008 Danny Coates, Ashkan Farhadtouski
+# Copyright 2008 Danny Coates, Ashkan Farhadtouski, Peter Wagenet
 # All rights reserved.
 # See LICENSE for permissions.
 #++
@@ -8,36 +8,37 @@
 
 module HealthVault
   module WCData
-  <% modules.each do |m| %>module <%= classify(m) %>
-  <% end %>
+  <%- modules.each do |m| -%>
+    module <%= hv_classify(m) %>
+  <%- end -%>
       class <%= class_name %> < ComplexType
         
   <% children.each do |child| %>   
        <% if child[:max] == '1' %>
         <% if child[:min].to_i > 0 %>#<b>REQUIRED</b><% end %>
         <%= child[:doc] %><%= "#<em>value</em> is a #{child[:class]}" %>
-        def <%= underscore(child[:name]) %>=(value)
+        def <%= child[:name].underscore.strip %>=(value)
           @children['<%= child[:name] %>'][:value] = value
         end
         
         <%= "#<b>returns</b>: a #{child[:class]}" %>
-        def <%= underscore(child[:name]) %>
+        def <%= child[:name].underscore.strip %>
           return @children['<%= child[:name] %>'][:value]
         end
        <% else %>
         <%= "#<em>value</em> is a #{child[:class]}" %>
-        def add_<%= underscore(child[:name]) %>(value)
+        def add_<%= child[:name].underscore.strip %>(value)
           @children['<%= child[:name] %>'][:value] << value
         end
         
         <%= "#<em>value</em> is a ##{child[:class]}" %>
-        def remove_<%= underscore(child[:name]) %>(value)
+        def remove_<%= child[:name].underscore.strip %>(value)
             @children['<%= child[:name] %>'][:value].delete(value)
         end
         
         <% if child[:min].to_i > 0 %>#<b>REQUIRED</b><% end %>
         <%= child[:doc] %><%= "#<b>returns</b>: a #{child[:class]} Array" %>
-        def <%= underscore(child[:name]) %>
+        def <%= child[:name].underscore.strip %>
           return @children['<%= child[:name] %>'][:value]
         end
        <% end %>
