@@ -24,12 +24,13 @@ namespace :healthvault do
     app = HealthVault::Application.default
     connection = app.create_connection
 
-    request_schemas = Array.new
-    response_schemas = Array.new
-    common_schemas = Array.new
+    request_schemas   = []
+    response_schemas  = []
+    common_schemas    = []
 
     # get the common and method schemas from the server
     request = HealthVault::Request.create("GetServiceDefinition", connection)
+    
     result = request.send
     result.info.xml_method.each do |xm|
       xm.version.each do |v|

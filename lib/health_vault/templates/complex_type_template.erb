@@ -13,53 +13,24 @@ module HealthVault
   <%- end -%>
       class <%= class_name %> < ComplexType
         
-  <% children.each do |child| %>   
-       <% if child[:max] == '1' %>
-        <% if child[:min].to_i > 0 %>#<b>REQUIRED</b><% end %>
-        <%= child[:doc] %><%= "#<em>value</em> is a #{child[:class]}" %>
-        def <%= child[:name].underscore.strip %>=(value)
-          @children['<%= child[:name] %>'][:value] = value
-        end
-        
-        <%= "#<b>returns</b>: a #{child[:class]}" %>
-        def <%= child[:name].underscore.strip %>
-          return @children['<%= child[:name] %>'][:value]
-        end
-       <% else %>
-        <%= "#<em>value</em> is a #{child[:class]}" %>
-        def add_<%= child[:name].underscore.strip %>(value)
-          @children['<%= child[:name] %>'][:value] << value
-        end
-        
-        <%= "#<em>value</em> is a ##{child[:class]}" %>
-        def remove_<%= child[:name].underscore.strip %>(value)
-            @children['<%= child[:name] %>'][:value].delete(value)
-        end
-        
-        <% if child[:min].to_i > 0 %>#<b>REQUIRED</b><% end %>
-        <%= child[:doc] %><%= "#<b>returns</b>: a #{child[:class]} Array" %>
-        def <%= child[:name].underscore.strip %>
-          return @children['<%= child[:name] %>'][:value]
-        end
-       <% end %>
-  <% end %>
+        set_tag_name '<%= tag_name %>'
       
-        def initialize
-          super
-          self.tag_name = '<%= tag_name %>'
-        <% children.each do |child| %>
-          <% if child[:max] == '1' %>
-          @children['<%= child[:name] %>'] = {:name => '<%= child[:name] %>', :class => <%= child[:class] %>, :value => nil, :min => <%= child[:min] %>, :max => <%= child[:max] %>, :order => <%= child[:order] %>, :place => :<%= child[:type]  %>, :choice => <%= child[:choice].to_i %> }
-            <% if child[:min] == '1' && child[:choice].nil? %>
-          @children['<%= child[:name] %>'][:value] = <%= child[:class] %>.new
-            <% end %>
-          <% else %>
-          @children['<%= child[:name] %>'] = {:name => '<%= child[:name] %>', :class => <%= child[:class] %>, :value => Array.new, :min => <%= child[:min] %>, :max => <%= child[:max] %>, :order => <%= child[:order] %>, :place => :<%= child[:type] %>, :choice => <%= child[:choice].to_i %> }
-          <% end %>
-        <% end %>
-        end
+      <%- children.each do |child| -%>
+        <%- if child[:min].to_i > 0 -%>
+        #<b>REQUIRED</b>
+        <%- end -%>
+        <%= child[:doc] %><%= "#<em>value</em> is a #{child[:class]}" %>
+        <%= "#<b>returns</b>: a #{child[:class]}" %>
+        <%- 
+          method = HealthVault::WCData::Child::TYPES.include?(child[:type].to_s) ? "child_#{child.delete(:type)}" : "child"
+          params = child.slice(*HealthVault::WCData::Child::PARAMS).map{|(k,v)| ":#{k} => #{v.inspect}"}.join(', ')
+        -%>
+        <%= method %> '<%= child[:name] %>', <%= params %>
+        
+      <%- end -%>      
       end
-  <%modules.length.times do %>end
-  <%  end %>
+  <%- modules.length.times do -%>
+    end
+  <%- end -%>
   end
 end

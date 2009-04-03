@@ -235,7 +235,7 @@ module HealthVault
         min = '1' if min.empty?
         @element_order += 1
         return {:name => 'anything',
-          :class => HealthVault::WCData::ComplexType,
+          :class => "HealthVault::WCData::ComplexType",
           :min => min,
           :max => max,
           :order => @element_order,

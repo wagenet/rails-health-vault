@@ -39,10 +39,9 @@ module HealthVault
         @info = nil
       else
         begin
-          mod = (m[1].split('.').collect {|s| hv_classify(s)}).join('::') + "::Info.new"
-          # eval may as well be called evil
-          nfo = eval mod
-          @info = nfo
+          mod_partial = m[1].split('.').map{|s| hv_classify(s)}.join('::')
+          mod = "HealthVault::WCData::#{mod_partial}::Info"
+          @info = mod.constantize.new
           @info.parse_element(info_node)
         rescue => e
           Configuration.instance.logger.error e
