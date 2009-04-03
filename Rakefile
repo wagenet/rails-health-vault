@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__), 'init')
 
 require 'rake'
+require 'rake/clean'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'rake/testtask'
@@ -8,6 +9,8 @@ require 'spec/rake/spectask'
 
 load File.join(File.dirname(__FILE__), 'tasks', 'healthvault.rake')
 
+CLOBBER.add("#{HEALTHVAULT_ROOT}/lib/health_vault/hv.log")
+CLOBBER.add(*HealthVault::CodeGeneration::Generator::GENERATED_PATHS)
 
 task :default => ['healthvault:get_things', :rdoc]
 
