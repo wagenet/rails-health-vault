@@ -13,6 +13,7 @@ require File.dirname(__FILE__) + '/utils/crypto_utils'
 module HealthVault
   class Connection
     include WCData
+    include HealthVault::ConnectionCommands
     attr_accessor :user_auth_token
     attr_reader :session_token, :shared_secret, :application
     
@@ -47,7 +48,7 @@ module HealthVault
         return !user_auth_token.nil?
       end
     end
-    
+        
     def send(request)
       http_endpoint = Net::HTTP.new(application.uri.host, application.uri.port)
       http_endpoint.use_ssl = true

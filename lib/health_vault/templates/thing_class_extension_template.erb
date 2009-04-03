@@ -44,6 +44,21 @@ module HealthVault
 
         add_child_method :guid
 
+        def relate(other)
+          self.data_xml.first.common ||= HealthVault::WCData::Thing::Common.new
+          self.data_xml.first.common.add_related_thing(HealthVault::WCData::Thing::RelatedThing.new(
+            :thing_id       => other.thing_id.data,
+            :version_stamp  => other.thing_id.version_stamp
+          ))
+          other
+        end
+
+        def put(connection)
+          result = connection.put_thing(self)
+          self.thing_id = result.info.thing_id.first # Set id and update version
+          result
+        end
+
       end
     end
   end
