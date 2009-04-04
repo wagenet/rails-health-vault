@@ -16,14 +16,17 @@ module HealthVault
         set_tag_name '<%= tag_name %>'
       
       <%- children.each do |child| -%>
+        <%# TODO: Handle docs better -%>
         <%- if child[:min].to_i > 0 -%>
         #<b>REQUIRED</b>
         <%- end -%>
         <%= child[:doc] %><%= "#<em>value</em> is a #{child[:class]}" %>
         <%= "#<b>returns</b>: a #{child[:class]}" %>
         <%- 
+          # TODO: Clean this up
           method = HealthVault::WCData::Child::TYPES.include?(child[:type].to_s) ? "child_#{child.delete(:type)}" : "child"
-          params = child.slice(*HealthVault::WCData::Child::PARAMS).map{|(k,v)| ":#{k} => #{v.inspect}"}.join(', ')
+          params = child.slice(*HealthVault::WCData::Child::PARAMS).sort{|a,b| a.to_s <=> b.to_s }.
+                      map{|(k,v)| ":#{k} => #{v.inspect}"}.join(', ')
         -%>
         <%= method %> '<%= child[:name] %>', <%= params %>
         
