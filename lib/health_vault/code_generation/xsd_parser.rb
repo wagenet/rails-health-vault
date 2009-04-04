@@ -15,7 +15,7 @@ module HealthVault
       include REXML
             
       def initialize(filename)
-        cdir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'templates'))
+        cdir = File.expand_path(File.join(HEALTHVAULT_ROOT, 'templates'))
         @filename = filename
         @simple_template = cdir + "/simple_type_template.erb"
         @complex_template = cdir + "/complex_type_template.erb"
