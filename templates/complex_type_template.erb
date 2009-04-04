@@ -16,7 +16,7 @@ module HealthVault
         set_tag_name '<%= tag_name %>'
       
       <%- children.each do |child| -%>
-        <%# TODO: Handle docs better -%>
+        <%- # TODO: Handle docs better -%>
         <%- if child[:min].to_i > 0 -%>
         #<b>REQUIRED</b>
         <%- end -%>
