@@ -78,6 +78,16 @@ module HealthVault
         @value = val
       end
       
+      # Make new instance of klass but don't associate
+      def build(attrs = {}, &block)
+        klass.new(attrs, &block)
+      end
+
+      # Make new instance of klass and associate
+      def create(attrs = {}, &block)
+        self.add_value(build(attrs, &block))
+      end
+      
       # Note, this does not prevent value from being modified directly
       def add_value(val, force = false)
         if singleton?
@@ -86,6 +96,7 @@ module HealthVault
           val = typecast_value(val) unless force
           value << val
         end
+        val
       end
       
       def remove_value(val)
@@ -94,6 +105,7 @@ module HealthVault
         else
           value.delete(val)
         end
+        val
       end
       
       def to_s
