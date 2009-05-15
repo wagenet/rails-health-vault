@@ -74,6 +74,14 @@ module HealthVault
               def #{method_name}
                 @children['#{name}'].value
               end
+
+              def build_#{method_name}(attrs = {}, &block)
+                @children['#{name}'].build(attrs, &block)
+              end
+              
+              def create_#{method_name}(attrs = {}, &block)
+                @children['#{name}'].create(attrs, &block)
+              end
             }, __FILE__, __LINE__)
             
             add_child_method(method_name)
@@ -86,7 +94,7 @@ module HealthVault
               def add_#{method_name}(value, force = false)
                 @children['#{name}'].add_value(value, force)
               end
-
+              
               def remove_#{method_name}(value)
                 @children['#{name}'].remove_value(value)
               end
