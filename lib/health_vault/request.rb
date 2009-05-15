@@ -63,7 +63,7 @@ module HealthVault
         header.info_hash = Types::HashFinalized.new
         header.info_hash.hash_data = Types::HashFinalizedData.new
         header.info_hash.hash_data.alg_name = "SHA1"
-        header.info_hash.hash_data.data = CryptoUtils.encode64(CryptoUtils.digest(info.element.to_s))
+        header.info_hash.hash_data.data = Utils::CryptoUtils.encode64(Utils::CryptoUtils.digest(info.element.to_s))
         header.auth_session = WCData::Request::AuthenticatedSessionInfo.new
         header.auth_session.auth_token = @connection.session_token
         header.auth_session.user_auth_token = @connection.user_auth_token #or offline_person_info
@@ -71,7 +71,7 @@ module HealthVault
         self.auth = Types::HMACFinalized.new
         auth.hmac_data = Types::HMACFinalizedData.new
         auth.hmac_data.alg_name = "HMACSHA1"
-        auth.hmac_data.data = CryptoUtils.encode64(CryptoUtils.hmac(@connection.shared_secret, header.element.to_s)) 
+        auth.hmac_data.data = Utils::CryptoUtils.encode64(Utils::CryptoUtils.hmac(@connection.shared_secret, header.element.to_s)) 
       else
         header.app_id = @connection.application.id
       end

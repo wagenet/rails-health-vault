@@ -6,12 +6,12 @@
 #++
 
 require 'uri'
-require 'utils/crypto_utils' # for CryptoKey
+require 'health_vault/utils/crypto_utils' # for CryptoKey
 
 module HealthVault
   class Application
     attr_reader :id, :uri
-    
+
     class << self
 
       def from_config(config)
