@@ -1,6 +1,6 @@
 default:
   app_id:     05a059c9-c309-46af-9b86-b06d42510550
-  cert_file:  <%= HEALTHVAULT_ROOT %>/bin/certs/helloWorld.pem
+  cert_file:  <%= RAILS_ROOT %>/config/healthvault.pem
   cert_pass: 
   shell_url:  https://account.healthvault-ppe.com
   hv_url:     https://platform.healthvault-ppe.com/platform/wildcat.ashx
