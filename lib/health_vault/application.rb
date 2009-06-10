@@ -6,7 +6,6 @@
 #++
 
 require 'uri'
-require 'health_vault/utils/crypto_utils' # for CryptoKey
 
 module HealthVault
   class Application
